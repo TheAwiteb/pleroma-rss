@@ -22,10 +22,6 @@ pub struct Cli {
     /// If this is set, the help message will be printed and the program will exit.
     /// The flag is `-h` or `--help`.
     pub help: bool,
-    /// Verbose flag. (Optional)
-    /// If this is set, the program will print more information.
-    /// The flag is `-v` or `--verbose`.
-    pub verbose: bool,
     /// Version flag. (Optional)
     /// If this is set, the version will be printed and the program will exit.
     /// The flag is `-V` or `--version`.
@@ -43,9 +39,6 @@ impl Cli {
                 cli.argc += 1;
             } else if arg == "-V" || arg == "--version" {
                 cli.version = true;
-                cli.argc += 1;
-            } else if arg == "-v" || arg == "--verbose" {
-                cli.verbose = true;
                 cli.argc += 1;
             } else if arg == "-a" || arg == "--access-token" {
                 cli.bot_token = get_flag(arg, &args)?;
@@ -94,7 +87,6 @@ impl Default for Cli {
             rss_feeds_file: PathBuf::new(),
             pleroma_base_url: url::Url::parse("https://example.com").unwrap(),
             help: false,
-            verbose: false,
             version: false,
         }
     }
