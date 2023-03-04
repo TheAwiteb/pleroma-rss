@@ -35,19 +35,25 @@ impl Content {
         }
     }
 
+    #[allow(unused)]
     pub async fn post(&self, base_url: &str, bot_token: &str) -> PResult<()> {
+        log::info!("Posting: {}", self.title);
+
         let description = remove_html_tags(&self.description);
         let link = urlencoding::decode(self.link.as_str()).unwrap();
         megalodon::generator(
             megalodon::SNS::Pleroma,
             // Remove the last slash.
-            base_url[..base_url.len() - 1].to_owned(),
+            base_url
+                .chars()
+                .take(base_url.len() - 1)
+                .collect::<String>(),
             Some(bot_token.to_owned()),
             None,
         )
         .post_status(format!("{}\n\n{description}\n\n{link}", self.title), None)
         .await?;
-
+        log::info!("Posted: {} successfully.", self.title);
         Ok(())
     }
 }
@@ -64,8 +70,11 @@ impl Feed {
     /// Checks if a new post has been made.
     /// If a new post has been made, it returns the post content.
     pub async fn check(&mut self) -> PResult<Vec<Content>> {
+        log::info!("Checking feed: {}", self.url);
         let feed = reqwest::get(self.url.as_str()).await?.text().await?;
+        log::info!("Feed: {} has been downloaded.", self.url);
         let feed = feed.parse::<rss::Channel>()?;
+        log::info!("Feed: {} has been parsed.", self.url);
         // Start from the last post and go backwards.
         // If a post is newer than the last post, it is added to the list.
         let feeds: Vec<_> = feed
@@ -120,10 +129,17 @@ impl From<Url> for Feed {
 /// https://example.com/feed2
 /// ```
 pub fn parse_feeds(rss_feeds_file: std::path::PathBuf) -> PResult<Vec<Feed>> {
+    log::debug!("Opening feeds file...");
     let file = std::fs::File::open(rss_feeds_file)?;
     let reader = std::io::BufReader::new(file);
+    log::debug!("Reading feeds file...");
     reader
         .lines()
-        .map(|line| Ok(line?.parse::<Url>()?.into()))
+        .filter(|line| !line.as_ref().unwrap().is_empty())
+        .map(|line| {
+            let line = line?;
+            log::debug!("Parsing feed: {}", line);
+            Ok(line.parse::<Url>()?.into())
+        })
         .collect()
 }

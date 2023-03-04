@@ -35,21 +35,30 @@ impl Cli {
         let mut cli = Cli::default();
         for arg in args.iter() {
             if arg == "-h" || arg == "--help" {
+                log::debug!("Help flag is set.");
                 cli.help = true;
                 cli.argc += 1;
             } else if arg == "-V" || arg == "--version" {
+                log::debug!("Version flag is set.");
                 cli.version = true;
                 cli.argc += 1;
             } else if arg == "-a" || arg == "--access-token" {
                 cli.bot_token = get_flag(arg, &args)?;
+                log::debug!(
+                    "Bot token is set to: {}...",
+                    &cli.bot_token.chars().take(5).collect::<String>()
+                );
                 cli.argc += 1;
             } else if arg == "-f" || arg == "--feed-file" {
                 cli.rss_feeds_file = get_flag(arg, &args)?;
+                log::debug!("Rss feeds file is set to: {}", cli.rss_feeds_file.display());
                 cli.argc += 1;
             } else if arg == "-b" || arg == "--base-url" {
                 cli.pleroma_base_url = get_flag(arg, &args)?;
+                log::debug!("Pleroma base url is set to: {}", cli.pleroma_base_url);
                 cli.argc += 1;
             } else if arg.starts_with('-') {
+                log::error!("Unknown argument: {}", arg);
                 return Err(PError::UnknownArgument(arg.to_string()));
             }
         }
@@ -62,17 +71,21 @@ impl Cli {
         if self.help || self.version {
             return Ok(self);
         } else if self.argc == 0 {
+            log::info!("No arguments are passed. Printing help message.");
             self.help = true;
             return Ok(self);
         }
 
         if self.bot_token.is_empty() {
+            log::error!("Bot token is not set.");
             return Err(PError::MissingArgument("--access-token".to_string()));
         }
         if matches!(self.rss_feeds_file.to_str(), None | Some("")) {
+            log::error!("Rss feeds file is not set.");
             return Err(PError::MissingArgument("--feed-file".to_string()));
         }
         if self.pleroma_base_url.to_string() == "https://example.com/" {
+            log::error!("Pleroma base url is not set.");
             return Err(PError::MissingArgument("--base-url".to_string()));
         }
         Ok(self)

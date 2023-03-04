@@ -23,13 +23,16 @@ pub fn get_flag<T: FromStr>(flag: &str, args: &[String]) -> PResult<T>
 where
     <T as std::str::FromStr>::Err: std::fmt::Debug + std::fmt::Display,
 {
+    log::debug!("Getting flag: {}", flag);
     let mut args = args.iter();
     while let Some(arg) = args.next() {
         if arg == flag {
             if let Some(value) = args.next() {
+                log::debug!("Found flag: {} with value: {}", flag, value);
                 return T::from_str(value)
                     .map_err(|err| PError::Parsing(flag.to_string(), err.to_string()));
             } else {
+                log::error!("Missing value for flag: {}", flag);
                 return Err(PError::UncompletedArgument(flag.to_string()));
             }
         }

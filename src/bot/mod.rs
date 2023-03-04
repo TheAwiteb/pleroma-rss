@@ -19,6 +19,11 @@ pub struct Bot {
 impl Bot {
     /// Creates a new bot.
     pub fn new(bot_token: String, base_url: url::Url, rss_feeds_file: PathBuf) -> PResult<Self> {
+        log::debug!(
+            "Creating a new bot. The base url is: {}. The rss feeds file is: {}",
+            base_url,
+            rss_feeds_file.display()
+        );
         Ok(Bot {
             bot_token,
             base_url,
@@ -28,12 +33,15 @@ impl Bot {
 
     /// Posts the new content to the pleroma instance.
     pub async fn post_new_contents(&mut self) -> PResult<()> {
+        log::info!("Checking for new contents.");
         for feed in &mut self.feeds {
+            log::info!("Checking feed: {}", feed.url);
             for content in &feed.check().await? {
+                log::info!("Found new content: {}", content.title);
                 content
                     .post(self.base_url.as_str(), &self.bot_token)
                     .await?;
-                // Sleep for 0.5 second to avoid rate limiting.
+                log::info!("Sleeping for 0.5 seconds.");
                 tokio::time::sleep(std::time::Duration::from_millis(500)).await;
             }
         }
