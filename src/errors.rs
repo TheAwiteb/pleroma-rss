@@ -8,6 +8,14 @@ pub enum Error {
     UncompletedArgument(String),
     #[error("In argument `{0}`: {1}")]
     Parsing(String, String),
+    #[error("The feeds file `{0}` is not found")]
+    FeedsFileNotFound(String),
+    #[error("The feeds file `{0}` is not a file")]
+    FeedsFileNotAFile(String),
+    #[error("The feeds file `{0}` is not readable")]
+    FeedsFileNotReadable(String),
+    #[error("The feeds file `{0}` is empty")]
+    FeedsFileEmpty(String),
     #[error("There is no publish date in items of the feed `{0}`")]
     NoPublishDate(url::Url),
     #[error("The publish date of the feed `{0}` is invalid")]
