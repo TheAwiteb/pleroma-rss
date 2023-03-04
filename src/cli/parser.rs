@@ -5,6 +5,8 @@ use std::path::PathBuf;
 /// The CLI parser. This is the main entry point for the CLI. It parses the CLI arguments.
 #[derive(Debug)]
 pub struct Cli {
+    /// The number of arguments.
+    pub(crate) argc: usize,
     /// The bot token. (Required)
     /// The flag is `-a` or `--access-token`.
     pub bot_token: String,
@@ -38,16 +40,22 @@ impl Cli {
         for arg in args.iter() {
             if arg == "-h" || arg == "--help" {
                 cli.help = true;
+                cli.argc += 1;
             } else if arg == "-V" || arg == "--version" {
                 cli.version = true;
+                cli.argc += 1;
             } else if arg == "-v" || arg == "--verbose" {
                 cli.verbose = true;
+                cli.argc += 1;
             } else if arg == "-a" || arg == "--access-token" {
                 cli.bot_token = get_flag(arg, &args)?;
+                cli.argc += 1;
             } else if arg == "-f" || arg == "--feed-file" {
                 cli.rss_feeds_file = get_flag(arg, &args)?;
+                cli.argc += 1;
             } else if arg == "-b" || arg == "--base-url" {
                 cli.pleroma_base_url = get_flag(arg, &args)?;
+                cli.argc += 1;
             } else if arg.starts_with('-') {
                 return Err(PError::UnknownArgument(arg.to_string()));
             }
@@ -56,9 +64,12 @@ impl Cli {
     }
 
     /// Checks if all required arguments are present.
-    fn check_required_args(self) -> PResult<Self> {
+    fn check_required_args(mut self) -> PResult<Self> {
         // If the help or version flag is set, the other arguments are not required.
         if self.help || self.version {
+            return Ok(self);
+        } else if self.argc == 0 {
+            self.help = true;
             return Ok(self);
         }
 
@@ -78,6 +89,7 @@ impl Cli {
 impl Default for Cli {
     fn default() -> Self {
         Self {
+            argc: 0,
             bot_token: String::new(),
             rss_feeds_file: PathBuf::new(),
             pleroma_base_url: url::Url::parse("https://example.com").unwrap(),
