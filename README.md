@@ -37,7 +37,7 @@ OPTIONS:
 ```
 ### Example
 ```bash
-$ pleroma-rss -b https://pleroma.site -a 1234567890 -f feeds.txt
+$ pleroma-rss -b https://bassam.social -a 1234567890 -f feeds.txt
 ```
 ## Feeds file
 The feeds file is a simple text file with one feed url per line. The file can be located anywhere on your system. The path to the file is passed to the program using the `-f` or `--feed-file` flag.
