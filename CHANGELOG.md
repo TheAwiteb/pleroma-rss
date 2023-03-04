@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2021-03-04
+### Added
+- The bot now can be run, readd the feeds file and post the feed items to the pleroma instance.
+- Enable logging using the `RUST_LOG` environment variabl
+- Check if the feed file exists and is readable.
+- Check if the feed file is not empty.
+- Check if the feed file is not a directory.
+
+### Changed
+- The help message is now printed if no arguments are passed to the program. [`07f2bef`](https://github.com/TheAwiteb/pleroma-rss/commit/07f2beff4f38a24c972e6c8ef38cfd178a0e4539)
+### Removed
+- Remove the `--verbose` flag. [`8e3d85c`](https://github.com/TheAwiteb/pleroma-rss/commit/8e3d85c714a2f43da0f887d8b217f6ff6a3f08dc)
+
 ## [0.1.0] - 2023-03-04
 ### Added
 - CLI parsing for:
