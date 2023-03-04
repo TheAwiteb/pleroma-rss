@@ -83,6 +83,26 @@ impl Cli {
         if matches!(self.rss_feeds_file.to_str(), None | Some("")) {
             log::error!("Rss feeds file is not set.");
             return Err(PError::MissingArgument("--feed-file".to_string()));
+        } else if !self.rss_feeds_file.exists() {
+            log::error!("Rss feeds file does not exist.");
+            return Err(PError::FeedsFileNotFound(
+                self.rss_feeds_file.display().to_string(),
+            ));
+        } else if !self.rss_feeds_file.is_file() {
+            log::error!("Rss feeds file is not a file.");
+            return Err(PError::FeedsFileNotAFile(
+                self.rss_feeds_file.display().to_string(),
+            ));
+        } else if self.rss_feeds_file.metadata()?.len() == 0 {
+            log::error!("Rss feeds file is empty.");
+            return Err(PError::FeedsFileEmpty(
+                self.rss_feeds_file.display().to_string(),
+            ));
+        } else if std::fs::File::open(&self.rss_feeds_file).is_err() {
+            log::error!("Rss feeds file is not readable.");
+            return Err(PError::FeedsFileNotReadable(
+                self.rss_feeds_file.display().to_string(),
+            ));
         }
         if self.pleroma_base_url.to_string() == "https://example.com/" {
             log::error!("Pleroma base url is not set.");
