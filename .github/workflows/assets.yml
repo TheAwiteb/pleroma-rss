@@ -19,8 +19,6 @@ jobs:
             archive: tar.gz tar.xz tar.zst
           - target: x86_64-apple-darwin
             archive: zip
-          - target: wasm32-wasi
-            archive: zip tar.gz tar.xz tar.zst
     steps:
       - uses: actions/checkout@v3
       - name: Create asset
