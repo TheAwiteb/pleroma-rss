@@ -51,6 +51,12 @@ https://example.com/feed2.xml
 ### Example output
 <img src="https://i.suar.me/17Yzw/" width="300" alt="Example output">
 
+## Logging
+To enable logging, set the `RUST_LOG` environment variable to `info` or `debug`. For example:
+```bash
+$ RUST_LOG=info pleroma-rss -b https://bassam.social -a 1234567890 -f feeds.txt
+```
+
 ## Contributing
 Pull requests are welcome. Please open an issue first to discuss what you would like to change.
 
