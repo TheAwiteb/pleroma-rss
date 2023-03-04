@@ -15,9 +15,7 @@ FLAGS:
 OPTIONS:
     -a, --access-token <access-token> The access token of the bot account
     -b, --base-url <base-url>         The base url of the pleroma instance
-    -f, --feed-file <feed-file>       The path to the feeds file 
-    -u, --username <username>         The username of the bot account
-"#
+    -f, --feed-file <feed-file>       The path to the feeds file "#
 }
 
 /// Gets the value of a flag. If the flag is not present, an error is returned.
