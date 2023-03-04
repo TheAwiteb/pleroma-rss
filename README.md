@@ -48,5 +48,11 @@ https://example.com/feed.xml
 https://example.com/feed2.xml
 ```
 
+### Example output
+<img src="https://i.suar.me/17Yzw/" width="300" alt="Example output">
+
+## Contributing
+Pull requests are welcome. Please open an issue first to discuss what you would like to change.
+
 ## License
 This project is licensed under the AGPL-3.0 License - see the [LICENSE](https://github.com/TheAwiteb/pleroma-rss/blob/master/LICENSE) file for details
