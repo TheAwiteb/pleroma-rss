@@ -2,7 +2,7 @@
 pub enum Error {
     #[error("Unknown argument `{0}`")]
     UnknownArgument(String),
-    #[error("The argument `{0}` is required")]
+    #[error("The argument `{0}` is required. Use `-h` or `--help` to see the help message.")]
     MissingArgument(String),
     #[error("`{0}` argument is missing a value.")]
     UncompletedArgument(String),
