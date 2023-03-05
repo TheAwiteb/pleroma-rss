@@ -50,6 +50,7 @@ pub async fn run(cli: Cli) -> PResult<()> {
         cli.pleroma_base_url,
         utils::parse_feeds(&cli.rss_feeds_file, cli.only_new)?,
         cli.only_new,
+        cli.dry_run,
     );
     let mut bot = Bot::new(config)?;
     loop {

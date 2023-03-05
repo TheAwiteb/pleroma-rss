@@ -26,6 +26,10 @@ pub struct Cli {
     /// If this is set, the bot will only send new feeds.
     /// The flag is `-n` or `--only-new`.
     pub only_new: bool,
+    /// Dry run flag. (Optional)
+    /// If this is set, the bot will only print the feed items that would be posted.
+    /// The flag is `-d` or `--dry-run`.
+    pub dry_run: bool,
     /// Version flag. (Optional)
     /// If this is set, the version will be printed and the program will exit.
     /// The flag is `-V` or `--version`.
@@ -49,6 +53,10 @@ impl Cli {
             } else if arg == "-n" || arg == "----only-new" {
                 log::debug!("Only new flag is set.");
                 cli.only_new = true;
+                cli.argc += 1;
+            } else if arg == "-d" || arg == "--dry-run" {
+                log::debug!("Dry run flag is set.");
+                cli.dry_run = true;
                 cli.argc += 1;
             } else if arg == "-a" || arg == "--access-token" {
                 cli.bot_token = get_flag(arg, &args)?;
@@ -129,6 +137,7 @@ impl Default for Cli {
             pleroma_base_url: url::Url::parse("https://example.com").unwrap(),
             help: false,
             only_new: false,
+            dry_run: false,
             version: false,
         }
     }
