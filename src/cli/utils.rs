@@ -10,12 +10,14 @@ pub const fn help_message() -> &'static str {
     r#"USAGE:
     pleroma-rss [FLAGS] [OPTIONS]
 FLAGS:
-    -h, --help    Prints help information
-    -V, --version Prints version information
+    -h, --help      Prints help information
+    -V, --version   Prints version information
+    -n, --only-new  Only post new feed items
+    -d, --dry-run   Only print the feed items that would be posted
 OPTIONS:
     -a, --access-token <access-token> The access token of the bot account
     -b, --base-url <base-url>         The base url of the pleroma instance
-    -f, --feed-file <feed-file>       The path to the feeds file "#
+    -f, --feed-file <feed-file>       The path to the feeds file"#
 }
 
 /// Gets the value of a flag. If the flag is not present, an error is returned.
@@ -28,7 +30,6 @@ where
     while let Some(arg) = args.next() {
         if arg == flag {
             if let Some(value) = args.next() {
-                log::debug!("Found flag: {} with value: {}", flag, value);
                 return T::from_str(value)
                     .map_err(|err| PError::Parsing(flag.to_string(), err.to_string()));
             } else {
