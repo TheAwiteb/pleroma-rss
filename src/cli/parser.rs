@@ -86,25 +86,27 @@ impl Cli {
                 cli.pleroma_base_url = get_flag(arg, &args)?;
                 log::debug!("Pleroma base url is set to: {}", cli.pleroma_base_url);
                 cli.argc += 1;
-            } else if arg.starts_with('-') {
-                log::error!("Unknown argument: {}", arg);
-                return Err(PError::UnknownArgument(arg.to_string()));
-            }
-            #[cfg(feature = "with-image")]
-            if arg == "-t" || arg == "--preview-image-template" {
+            } else if cfg!(feature = "with-image")
+                && (arg == "-t" || arg == "--preview-image-template")
+            {
                 cli.preview_image_template = get_flag(arg, &args)?;
                 log::debug!(
                     "Preview image template is set to: {}",
                     cli.preview_image_template.display()
                 );
                 cli.argc += 1;
-            } else if arg == "-i" || arg == "--default-preview-image" {
+            } else if cfg!(feature = "with-image")
+                && (arg == "-i" || arg == "--default-preview-image")
+            {
                 cli.default_preview_image = get_flag(arg, &args)?;
                 log::debug!(
                     "Default preview image is set to: {}",
                     cli.default_preview_image.display()
                 );
                 cli.argc += 1;
+            } else if arg.starts_with('-') {
+                log::error!("Unknown argument: {}", arg);
+                return Err(PError::UnknownArgument(arg.to_string()));
             }
         }
         cli.check_required_args()
