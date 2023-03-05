@@ -1,3 +1,4 @@
+#[cfg(feature = "preview-image")]
 use std::path::PathBuf;
 
 use crate::bot::Feed;
@@ -16,10 +17,10 @@ pub struct Config {
     /// Dry run flag.
     pub dry_run: bool,
     /// The preview image html template.
-    #[cfg(feature = "with-image")]
+    #[cfg(feature = "preview-image")]
     pub preview_image_template: PathBuf,
     /// The default image of the preview image.
-    #[cfg(feature = "with-image")]
+    #[cfg(feature = "preview-image")]
     pub default_preview_image: PathBuf,
 }
 
@@ -31,8 +32,8 @@ impl Config {
         feeds: Vec<Feed>,
         only_new: bool,
         dry_run: bool,
-        #[cfg(feature = "with-image")] preview_image_template: PathBuf,
-        #[cfg(feature = "with-image")] default_preview_image: PathBuf,
+        #[cfg(feature = "preview-image")] preview_image_template: PathBuf,
+        #[cfg(feature = "preview-image")] default_preview_image: PathBuf,
     ) -> Self {
         Self {
             bot_token,
@@ -40,9 +41,9 @@ impl Config {
             feeds,
             only_new,
             dry_run,
-            #[cfg(feature = "with-image")]
+            #[cfg(feature = "preview-image")]
             preview_image_template,
-            #[cfg(feature = "with-image")]
+            #[cfg(feature = "preview-image")]
             default_preview_image,
         }
     }

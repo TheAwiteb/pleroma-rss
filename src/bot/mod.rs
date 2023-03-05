@@ -1,6 +1,7 @@
 pub use self::rss::Feed;
 use crate::{cli::Cli, config::Config, errors::Error as PError, errors::Result as PResult, utils};
-
+#[cfg(feature = "preview-image")]
+mod image;
 mod rss;
 
 /// A bot struct that handles the communication with the pleroma instance.
@@ -56,9 +57,9 @@ pub async fn run(cli: Cli) -> PResult<()> {
         utils::parse_feeds(&cli.rss_feeds_file, cli.only_new)?,
         cli.only_new,
         cli.dry_run,
-        #[cfg(feature = "with-image")]
+        #[cfg(feature = "preview-image")]
         cli.preview_image_template,
-        #[cfg(feature = "with-image")]
+        #[cfg(feature = "preview-image")]
         cli.default_preview_image,
     );
     let mut bot = Bot::new(config)?;
@@ -67,7 +68,14 @@ pub async fn run(cli: Cli) -> PResult<()> {
         // Otherwise, return the error.
         match bot.post_new_contents().await {
             Ok(_) => log::info!("Finished checking for new contents."),
-            Err(PError::RequestError(err)) => eprintln!("Error: {}", err),
+            Err(PError::RequestError(err)) => {
+                log::error!("Error: {}", err);
+                eprintln!("Error: {}", err)
+            }
+            Err(PError::MegalodonError(err)) => {
+                log::error!("Error: {}", err);
+                eprintln!("Error: {}", err)
+            }
             Err(err) => return Err(err),
         }
         // Sleep for 30 seconds.

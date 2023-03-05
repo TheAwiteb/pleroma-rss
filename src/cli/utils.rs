@@ -6,7 +6,7 @@ pub const fn version_message() -> &'static str {
     concat!(env!("CARGO_PKG_NAME"), " v", env!("CARGO_PKG_VERSION"))
 }
 
-#[cfg(not(feature = "with-image"))]
+#[cfg(not(feature = "preview-image"))]
 pub const fn help_message() -> &'static str {
     r#"USAGE:
     pleroma-rss [FLAGS] [OPTIONS]
@@ -21,7 +21,7 @@ OPTIONS:
     -f, --feed-file <feed-file>       The path to the feeds file."#
 }
 
-#[cfg(feature = "with-image")]
+#[cfg(feature = "preview-image")]
 pub const fn help_message() -> &'static str {
     r#"USAGE:
     pleroma-rss [FLAGS] [OPTIONS]

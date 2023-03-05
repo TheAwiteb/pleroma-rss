@@ -24,12 +24,12 @@ pub struct Cli {
     /// Preview image html template. (Required)
     /// This is the html template that will be used to generate the preview image.
     /// The flag is `-t` or `--preview-image-template`.
-    #[cfg(feature = "with-image")]
+    #[cfg(feature = "preview-image")]
     pub preview_image_template: PathBuf,
     /// Default image of the preview image. (Required)
     /// This is the default image that will be used if the feed item does not have an image.
     /// The flag is `-i` or `--default-preview-image`.
-    #[cfg(feature = "with-image")]
+    #[cfg(feature = "preview-image")]
     pub default_preview_image: PathBuf,
     /// Help flag. (Optional)
     /// If this is set, the help message will be printed and the program will exit.
@@ -86,24 +86,30 @@ impl Cli {
                 cli.pleroma_base_url = get_flag(arg, &args)?;
                 log::debug!("Pleroma base url is set to: {}", cli.pleroma_base_url);
                 cli.argc += 1;
-            } else if cfg!(feature = "with-image")
+            } else if cfg!(feature = "preview-image")
                 && (arg == "-t" || arg == "--preview-image-template")
             {
-                cli.preview_image_template = get_flag(arg, &args)?;
-                log::debug!(
-                    "Preview image template is set to: {}",
-                    cli.preview_image_template.display()
-                );
-                cli.argc += 1;
-            } else if cfg!(feature = "with-image")
+                #[cfg(feature = "preview-image")]
+                {
+                    cli.preview_image_template = get_flag(arg, &args)?;
+                    log::debug!(
+                        "Preview image template is set to: {}",
+                        cli.preview_image_template.display()
+                    );
+                    cli.argc += 1;
+                }
+            } else if cfg!(feature = "preview-image")
                 && (arg == "-i" || arg == "--default-preview-image")
             {
-                cli.default_preview_image = get_flag(arg, &args)?;
-                log::debug!(
-                    "Default preview image is set to: {}",
-                    cli.default_preview_image.display()
-                );
-                cli.argc += 1;
+                #[cfg(feature = "preview-image")]
+                {
+                    cli.default_preview_image = get_flag(arg, &args)?;
+                    log::debug!(
+                        "Default preview image is set to: {}",
+                        cli.default_preview_image.display()
+                    );
+                    cli.argc += 1;
+                }
             } else if arg.starts_with('-') {
                 log::error!("Unknown argument: {}", arg);
                 return Err(PError::UnknownArgument(arg.to_string()));
@@ -135,14 +141,14 @@ impl Cli {
             log::error!("Pleroma base url is not set.");
             return Err(PError::MissingArgument("--base-url".to_string()));
         }
-        #[cfg(feature = "with-image")]
+        #[cfg(feature = "preview-image")]
         if self.preview_image_template.to_str() == Some("") {
             log::error!("Preview image template is not set.");
             return Err(PError::MissingArgument(
                 "--preview-image-template".to_string(),
             ));
         }
-        #[cfg(feature = "with-image")]
+        #[cfg(feature = "preview-image")]
         if self.default_preview_image.to_str() == Some("") {
             log::error!("Default preview image is not set.");
             return Err(PError::MissingArgument(
@@ -150,9 +156,9 @@ impl Cli {
             ));
         }
         utils::check_file(&self.rss_feeds_file)?;
-        #[cfg(feature = "with-image")]
+        #[cfg(feature = "preview-image")]
         utils::check_file(&self.preview_image_template)?;
-        #[cfg(feature = "with-image")]
+        #[cfg(feature = "preview-image")]
         utils::check_file(&self.default_preview_image)?;
 
         Ok(self)
@@ -170,9 +176,9 @@ impl Default for Cli {
             only_new: false,
             dry_run: false,
             version: false,
-            #[cfg(feature = "with-image")]
+            #[cfg(feature = "preview-image")]
             preview_image_template: PathBuf::new(),
-            #[cfg(feature = "with-image")]
+            #[cfg(feature = "preview-image")]
             default_preview_image: PathBuf::new(),
         }
     }
