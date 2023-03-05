@@ -1,46 +1,40 @@
-use std::path::PathBuf;
+pub use self::rss::Feed;
+use crate::{cli::Cli, config::Config, errors::Error as PError, errors::Result as PResult, utils};
 
-use self::rss::Feed;
 mod rss;
-use crate::{cli::Cli, errors::Error as PError, errors::Result as PResult};
 
 /// A bot struct that handles the communication with the pleroma instance.
 /// It also handles the RSS feed parsing.
 #[derive(Debug)]
 pub struct Bot {
-    /// The bot token.
-    pub bot_token: String,
-    /// The base url of the pleroma instance.
-    pub base_url: url::Url,
-    /// The RSS feeds.
-    pub feeds: Vec<Feed>,
+    config: Config,
 }
 
 impl Bot {
     /// Creates a new bot.
-    pub fn new(bot_token: String, base_url: url::Url, rss_feeds_file: PathBuf) -> PResult<Self> {
+    pub fn new(config: Config) -> PResult<Self> {
         log::debug!(
-            "Creating a new bot. The base url is: {}. The rss feeds file is: {}",
-            base_url,
-            rss_feeds_file.display()
+            "Creating a new bot. The base url is: {}. The feeds is: {}",
+            config.base_url,
+            config
+                .feeds
+                .iter()
+                .map(|f| f.url.to_string())
+                .collect::<Vec<String>>()
+                .join(", ")
         );
-        Ok(Bot {
-            bot_token,
-            base_url,
-            feeds: rss::parse_feeds(rss_feeds_file)?,
-        })
+        Ok(Self { config })
     }
 
     /// Posts the new content to the pleroma instance.
     pub async fn post_new_contents(&mut self) -> PResult<()> {
         log::info!("Checking for new contents.");
-        for feed in &mut self.feeds {
+        let config = self.config.clone();
+        for feed in &mut self.config.feeds {
             log::info!("Checking feed: {}", feed.url);
             for content in &feed.check().await? {
                 log::info!("Found new content: {}", content.title);
-                content
-                    .post(self.base_url.as_str(), &self.bot_token)
-                    .await?;
+                content.post(&config).await?;
                 log::info!("Sleeping for 0.5 seconds.");
                 tokio::time::sleep(std::time::Duration::from_millis(500)).await;
             }
@@ -51,16 +45,23 @@ impl Bot {
 
 /// Runs the bot. Infinite loop.
 pub async fn run(cli: Cli) -> PResult<()> {
-    let mut bot = Bot::new(cli.bot_token, cli.pleroma_base_url, cli.rss_feeds_file)?;
+    let config = Config::new(
+        cli.bot_token,
+        cli.pleroma_base_url,
+        utils::parse_feeds(&cli.rss_feeds_file)?,
+        cli.only_new,
+    );
+    let mut bot = Bot::new(config)?;
     loop {
         // If the error is a request error, print it and continue.
         // Otherwise, return the error.
         match bot.post_new_contents().await {
-            Ok(_) => (),
+            Ok(_) => log::info!("Finished checking for new contents."),
             Err(PError::RequestError(err)) => eprintln!("Error: {}", err),
             Err(err) => return Err(err),
         }
         // Sleep for 30 seconds.
+        log::info!("Waiting for new contents. Sleeping for 30 seconds.");
         tokio::time::sleep(std::time::Duration::from_secs(30)).await;
     }
 }
