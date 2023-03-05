@@ -22,6 +22,10 @@ pub struct Cli {
     /// If this is set, the help message will be printed and the program will exit.
     /// The flag is `-h` or `--help`.
     pub help: bool,
+    /// Only new flag. (Optional)
+    /// If this is set, the bot will only send new feeds.
+    /// The flag is `-n` or `--only-new`.
+    pub only_new: bool,
     /// Version flag. (Optional)
     /// If this is set, the version will be printed and the program will exit.
     /// The flag is `-V` or `--version`.
@@ -41,6 +45,10 @@ impl Cli {
             } else if arg == "-V" || arg == "--version" {
                 log::debug!("Version flag is set.");
                 cli.version = true;
+                cli.argc += 1;
+            } else if arg == "-n" || arg == "----only-new" {
+                log::debug!("Only new flag is set.");
+                cli.only_new = true;
                 cli.argc += 1;
             } else if arg == "-a" || arg == "--access-token" {
                 cli.bot_token = get_flag(arg, &args)?;
@@ -120,6 +128,7 @@ impl Default for Cli {
             rss_feeds_file: PathBuf::new(),
             pleroma_base_url: url::Url::parse("https://example.com").unwrap(),
             help: false,
+            only_new: false,
             version: false,
         }
     }
