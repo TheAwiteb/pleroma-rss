@@ -28,8 +28,10 @@ $ pleroma-rss --help
 USAGE:
     pleroma-rss [FLAGS] [OPTIONS]
 FLAGS:
-    -h, --help    Prints help information
-    -V, --version Prints version information
+    -h, --help      Prints help information
+    -V, --version   Prints version information
+    -n, --only-new  Only post new feed items
+    -d, --dry-run   Only print the feed items that would be posted
 OPTIONS:
     -a, --access-token <access-token> The access token of the bot account
     -b, --base-url <base-url>         The base url of the pleroma instance
@@ -54,7 +56,7 @@ https://example.com/feed2.xml
 ## Logging
 To enable logging, set the `RUST_LOG` environment variable to `info` or `debug`. For example:
 ```bash
-$ RUST_LOG=info pleroma-rss -b https://bassam.social -a 1234567890 -f feeds.txt
+$ RUST_LOG=debug pleroma-rss -b https://bassam.social -a 1234567890 -f feeds.txt
 ```
 
 ## Contributing
