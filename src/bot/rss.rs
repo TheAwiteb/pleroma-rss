@@ -37,7 +37,6 @@ impl Content {
         }
     }
 
-    #[allow(unused)]
     pub async fn post(&self, config: &Config) -> PResult<()> {
         log::info!("Posting: {}", self.title);
 
@@ -105,11 +104,16 @@ impl Feed {
         feeds
             .iter()
             .filter(|(date, _)| {
-                if let Some(last_post) = self.last_post {
+                let status = if let Some(last_post) = self.last_post {
                     date > &last_post
                 } else {
                     true
+                };
+                if status {
+                    log::debug!("New post found: {}", date);
+                    self.last_post = Some(*date);
                 }
+                status
             })
             .map(|(_, item)| {
                 Ok(Content::new(
