@@ -6,18 +6,37 @@ pub const fn version_message() -> &'static str {
     concat!(env!("CARGO_PKG_NAME"), " v", env!("CARGO_PKG_VERSION"))
 }
 
+#[cfg(not(feature = "with-image"))]
 pub const fn help_message() -> &'static str {
     r#"USAGE:
     pleroma-rss [FLAGS] [OPTIONS]
 FLAGS:
-    -h, --help      Prints help information
-    -V, --version   Prints version information
-    -n, --only-new  Only post new feed items
-    -d, --dry-run   Only print the feed items that would be posted
+    -h, --help      Prints help information.
+    -V, --version   Prints version information.
+    -n, --only-new  Only post new feed items.
+    -d, --dry-run   Only print the feed items that would be posted.
 OPTIONS:
-    -a, --access-token <access-token> The access token of the bot account
-    -b, --base-url <base-url>         The base url of the pleroma instance
-    -f, --feed-file <feed-file>       The path to the feeds file"#
+    -a, --access-token <access-token> The access token of the bot account.
+    -b, --base-url <base-url>         The base url of the pleroma instance.
+    -f, --feed-file <feed-file>       The path to the feeds file."#
+}
+
+#[cfg(feature = "with-image")]
+pub const fn help_message() -> &'static str {
+    r#"USAGE:
+    pleroma-rss [FLAGS] [OPTIONS]
+FLAGS:
+    -h, --help      Prints help information.
+    -V, --version   Prints version information.
+    -n, --only-new  Only post new feed items.
+    -d, --dry-run   Only print the feed items that would be posted.
+OPTIONS:
+    -a, --access-token <access-token> The access token of the bot account.
+    -b, --base-url <base-url>         The base url of the pleroma instance.
+    -f, --feed-file <feed-file>       The path to the feeds file.
+    -t, --preview-image-template <preview-image-template> The path to the preview image template.
+    -i, --default-preview-image <default-preview-image>   The path to the default image 
+                                                            when the feed item does not have an image."#
 }
 
 /// Gets the value of a flag. If the flag is not present, an error is returned.
