@@ -1,9 +1,9 @@
 use crate::{
+    config::Config,
     errors::{Error as PError, Result as PResult},
     utils::remove_html_tags,
 };
 use chrono::DateTime;
-use std::io::BufRead;
 use url::Url;
 
 /// The RSS feed struct. It contains the feed url and the last post date.
@@ -36,11 +36,12 @@ impl Content {
     }
 
     #[allow(unused)]
-    pub async fn post(&self, base_url: &str, bot_token: &str) -> PResult<()> {
+    pub async fn post(&self, config: &Config) -> PResult<()> {
         log::info!("Posting: {}", self.title);
 
         let description = remove_html_tags(&self.description);
         let link = urlencoding::decode(self.link.as_str()).unwrap();
+        let base_url = config.base_url.as_str();
         megalodon::generator(
             megalodon::SNS::Pleroma,
             // Remove the last slash.
@@ -48,7 +49,7 @@ impl Content {
                 .chars()
                 .take(base_url.len() - 1)
                 .collect::<String>(),
-            Some(bot_token.to_owned()),
+            Some(config.bot_token.to_owned()),
             None,
         )
         .post_status(format!("{}\n\n{description}\n\n{link}", self.title), None)
@@ -118,28 +119,4 @@ impl From<Url> for Feed {
     fn from(url: Url) -> Self {
         Self::new(url)
     }
-}
-
-/// Parses the RSS feeds file. It returns a list of feeds.
-/// ### File format
-/// The file must contain one feed url per line.
-/// The url must be valid.
-/// ```text
-/// https://example.com/feed
-/// https://example.com/feed2
-/// ```
-pub fn parse_feeds(rss_feeds_file: std::path::PathBuf) -> PResult<Vec<Feed>> {
-    log::debug!("Opening feeds file...");
-    let file = std::fs::File::open(rss_feeds_file)?;
-    let reader = std::io::BufReader::new(file);
-    log::debug!("Reading feeds file...");
-    reader
-        .lines()
-        .filter(|line| !line.as_ref().unwrap().is_empty())
-        .map(|line| {
-            let line = line?;
-            log::debug!("Parsing feed: {}", line);
-            Ok(line.parse::<Url>()?.into())
-        })
-        .collect()
 }
