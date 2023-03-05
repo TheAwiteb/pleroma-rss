@@ -25,7 +25,7 @@ pub fn remove_html_tags(text: &str) -> String {
 /// https://example.com/feed
 /// https://example.com/feed2
 /// ```
-pub fn parse_feeds(rss_feeds_file: &std::path::Path) -> PResult<Vec<Feed>> {
+pub fn parse_feeds(rss_feeds_file: &std::path::Path, only_new: bool) -> PResult<Vec<Feed>> {
     log::debug!("Opening feeds file...");
     let file = std::fs::File::open(rss_feeds_file)?;
     let reader = std::io::BufReader::new(file);
@@ -35,8 +35,8 @@ pub fn parse_feeds(rss_feeds_file: &std::path::Path) -> PResult<Vec<Feed>> {
         .filter(|line| !line.as_ref().unwrap().is_empty())
         .map(|line| {
             let line = line?;
-            log::debug!("Parsing feed: {}", line);
-            Ok(line.parse::<Url>()?.into())
+            log::debug!("Parsing feed: {}, only_new: {}", line, only_new);
+            Ok(Feed::new(Url::parse(&line)?, only_new))
         })
         .collect()
 }

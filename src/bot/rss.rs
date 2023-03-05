@@ -61,10 +61,17 @@ impl Content {
 
 impl Feed {
     /// Creates a new feed.
-    pub fn new(url: Url) -> Self {
+    /// If `only_new` is true, it will only return new posts when checking with [`check`].
+    ///
+    /// [`check`]: #method.check
+    pub fn new(url: Url, only_new: bool) -> Self {
         Self {
             url,
-            last_post: None,
+            last_post: if only_new {
+                Some(chrono::Utc::now().timestamp() as u64)
+            } else {
+                None
+            },
         }
     }
 
@@ -94,7 +101,7 @@ impl Feed {
             .collect::<PResult<_>>()?;
         feeds
             .iter()
-            .take_while(|(date, _)| {
+            .filter(|(date, _)| {
                 if let Some(last_post) = self.last_post {
                     date > &last_post
                 } else {
@@ -112,11 +119,5 @@ impl Feed {
                 ))
             })
             .collect()
-    }
-}
-
-impl From<Url> for Feed {
-    fn from(url: Url) -> Self {
-        Self::new(url)
     }
 }

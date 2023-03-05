@@ -48,7 +48,7 @@ pub async fn run(cli: Cli) -> PResult<()> {
     let config = Config::new(
         cli.bot_token,
         cli.pleroma_base_url,
-        utils::parse_feeds(&cli.rss_feeds_file)?,
+        utils::parse_feeds(&cli.rss_feeds_file, cli.only_new)?,
         cli.only_new,
     );
     let mut bot = Bot::new(config)?;
