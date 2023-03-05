@@ -56,6 +56,10 @@ pub async fn run(cli: Cli) -> PResult<()> {
         utils::parse_feeds(&cli.rss_feeds_file, cli.only_new)?,
         cli.only_new,
         cli.dry_run,
+        #[cfg(feature = "with-image")]
+        cli.preview_image_template,
+        #[cfg(feature = "with-image")]
+        cli.default_preview_image,
     );
     let mut bot = Bot::new(config)?;
     loop {

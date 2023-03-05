@@ -1,5 +1,8 @@
 use super::utils::get_flag;
-use crate::errors::{Error as PError, Result as PResult};
+use crate::{
+    errors::{Error as PError, Result as PResult},
+    utils,
+};
 use std::path::PathBuf;
 
 /// The CLI parser. This is the main entry point for the CLI. It parses the CLI arguments.
@@ -18,6 +21,16 @@ pub struct Cli {
     /// This is the base url of the Pleroma instance that the bot will post to.
     /// The flag is `-b` or `--base-url`.
     pub pleroma_base_url: url::Url,
+    /// Preview image html template. (Required)
+    /// This is the html template that will be used to generate the preview image.
+    /// The flag is `-t` or `--preview-image-template`.
+    #[cfg(feature = "with-image")]
+    pub preview_image_template: PathBuf,
+    /// Default image of the preview image. (Required)
+    /// This is the default image that will be used if the feed item does not have an image.
+    /// The flag is `-i` or `--default-preview-image`.
+    #[cfg(feature = "with-image")]
+    pub default_preview_image: PathBuf,
     /// Help flag. (Optional)
     /// If this is set, the help message will be printed and the program will exit.
     /// The flag is `-h` or `--help`.
@@ -77,6 +90,22 @@ impl Cli {
                 log::error!("Unknown argument: {}", arg);
                 return Err(PError::UnknownArgument(arg.to_string()));
             }
+            #[cfg(feature = "with-image")]
+            if arg == "-t" || arg == "--preview-image-template" {
+                cli.preview_image_template = get_flag(arg, &args)?;
+                log::debug!(
+                    "Preview image template is set to: {}",
+                    cli.preview_image_template.display()
+                );
+                cli.argc += 1;
+            } else if arg == "-i" || arg == "--default-preview-image" {
+                cli.default_preview_image = get_flag(arg, &args)?;
+                log::debug!(
+                    "Default preview image is set to: {}",
+                    cli.default_preview_image.display()
+                );
+                cli.argc += 1;
+            }
         }
         cli.check_required_args()
     }
@@ -96,34 +125,34 @@ impl Cli {
             log::error!("Bot token is not set.");
             return Err(PError::MissingArgument("--access-token".to_string()));
         }
-        if matches!(self.rss_feeds_file.to_str(), None | Some("")) {
+        if self.rss_feeds_file.to_str() == Some("") {
             log::error!("Rss feeds file is not set.");
             return Err(PError::MissingArgument("--feed-file".to_string()));
-        } else if !self.rss_feeds_file.exists() {
-            log::error!("Rss feeds file does not exist.");
-            return Err(PError::FeedsFileNotFound(
-                self.rss_feeds_file.display().to_string(),
-            ));
-        } else if !self.rss_feeds_file.is_file() {
-            log::error!("Rss feeds file is not a file.");
-            return Err(PError::FeedsFileNotAFile(
-                self.rss_feeds_file.display().to_string(),
-            ));
-        } else if self.rss_feeds_file.metadata()?.len() == 0 {
-            log::error!("Rss feeds file is empty.");
-            return Err(PError::FeedsFileEmpty(
-                self.rss_feeds_file.display().to_string(),
-            ));
-        } else if std::fs::File::open(&self.rss_feeds_file).is_err() {
-            log::error!("Rss feeds file is not readable.");
-            return Err(PError::FeedsFileNotReadable(
-                self.rss_feeds_file.display().to_string(),
-            ));
         }
         if self.pleroma_base_url.to_string() == "https://example.com/" {
             log::error!("Pleroma base url is not set.");
             return Err(PError::MissingArgument("--base-url".to_string()));
         }
+        #[cfg(feature = "with-image")]
+        if self.preview_image_template.to_str() == Some("") {
+            log::error!("Preview image template is not set.");
+            return Err(PError::MissingArgument(
+                "--preview-image-template".to_string(),
+            ));
+        }
+        #[cfg(feature = "with-image")]
+        if self.default_preview_image.to_str() == Some("") {
+            log::error!("Default preview image is not set.");
+            return Err(PError::MissingArgument(
+                "--default-preview-image".to_string(),
+            ));
+        }
+        utils::check_file(&self.rss_feeds_file)?;
+        #[cfg(feature = "with-image")]
+        utils::check_file(&self.preview_image_template)?;
+        #[cfg(feature = "with-image")]
+        utils::check_file(&self.default_preview_image)?;
+
         Ok(self)
     }
 }
@@ -139,6 +168,10 @@ impl Default for Cli {
             only_new: false,
             dry_run: false,
             version: false,
+            #[cfg(feature = "with-image")]
+            preview_image_template: PathBuf::new(),
+            #[cfg(feature = "with-image")]
+            default_preview_image: PathBuf::new(),
         }
     }
 }
