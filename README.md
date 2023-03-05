@@ -41,6 +41,35 @@ OPTIONS:
 ```bash
 $ pleroma-rss -b https://bassam.social -a 1234567890 -f feeds.txt
 ```
+
+### `preview-image` feature
+> Disabled by default
+
+The `preview-image` feature will create a preview image for each feed item. Will get the image from the `media:content` tag if it exists, otherwise it will use `--default-preview-image`. The image will deleted after it is posted.
+#### Enabling the feature
+To enable the feature, you need to compile the program with the `preview-image` feature. You can do that by running the following command:
+```bash
+$ cargo install -F preview-image --locked --git https://github.com/TheAwiteb/pleroma-rss
+```
+#### Extra flags
+There is tow extra flags when using the `preview-image` feature, `--default-preview-image` and `--preview-image-template`. The `--default-preview-image` flag is used to set the default image that will be used if the feed item doesn't have an image. The `--preview-image-template` flag is used to set the template for the preview image. The template is a HTML file can use any CSS style. The template can use the following variables:
+- `{{title}}`: The title of the feed item
+- `{{description}}`: The description of the feed item (first **320** characters full words)
+- `{{link}}`: The link of the feed item
+- `{{image-src}}`: The source of the image
+#### Extra dependencies
+The `preview-image` feature requires the wkhtmltoimage binary to be installed on your system. You can download it from [here](https://wkhtmltopdf.org/downloads.html). The binary must be in your `$PATH`. You can check if it is installed by running the following command:
+```bash
+$ wkhtmltoimage --version
+wkhtmltoimage 0.12.6 (with patched qt)
+```
+#### Example
+```bash
+$ pleroma-rss -b https://bassam.social -a 1234567890 -f feeds.txt --default-preview-image default.png --preview-image-template template.html
+```
+#### Example output
+<img src="https://i.suar.me/jdZEx/" width="300" alt="Example output">
+
 ## Feeds file
 The feeds file is a simple text file with one feed url per line. The file can be located anywhere on your system. The path to the file is passed to the program using the `-f` or `--feed-file` flag.
 ### Example
