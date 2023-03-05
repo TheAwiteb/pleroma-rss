@@ -16,6 +16,8 @@ pub struct Feed {
     pub last_post: Option<u64>,
 }
 
+/// The content of a feed.
+#[derive(Debug)]
 pub struct Content {
     pub title: String,
     pub link: String,
@@ -39,8 +41,6 @@ impl Content {
     pub async fn post(&self, config: &Config) -> PResult<()> {
         log::info!("Posting: {}", self.title);
 
-        let description = remove_html_tags(&self.description);
-        let link = urlencoding::decode(self.link.as_str()).unwrap();
         let base_url = config.base_url.as_str();
         megalodon::generator(
             megalodon::SNS::Pleroma,
@@ -52,7 +52,10 @@ impl Content {
             Some(config.bot_token.to_owned()),
             None,
         )
-        .post_status(format!("{}\n\n{description}\n\n{link}", self.title), None)
+        .post_status(
+            format!("{}\n\n{}\n\n{}", self.title, self.description, self.link),
+            None,
+        )
         .await?;
         log::info!("Posted: {} successfully.", self.title);
         Ok(())
@@ -112,10 +115,15 @@ impl Feed {
                 Ok(Content::new(
                     item.title()
                         .ok_or_else(|| PError::NoTitle(self.url.clone()))?,
-                    item.link()
-                        .ok_or_else(|| PError::NoLink(self.url.clone()))?,
-                    item.description()
-                        .ok_or_else(|| PError::NoDescription(self.url.clone()))?,
+                    urlencoding::decode(
+                        item.link()
+                            .ok_or_else(|| PError::NoLink(self.url.clone()))?,
+                    )
+                    .unwrap(),
+                    remove_html_tags(
+                        item.description()
+                            .ok_or_else(|| PError::NoDescription(self.url.clone()))?,
+                    ),
                 ))
             })
             .collect()
