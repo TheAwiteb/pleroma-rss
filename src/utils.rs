@@ -12,8 +12,11 @@ pub fn remove_html_tags(text: &str) -> String {
         "Removing html tags from: {}...",
         text.chars().take(10).collect::<String>()
     );
-    let re = regex::Regex::new(r"<[^>]*>").unwrap();
-    re.replace_all(&text.replace("<br />", "").replace("&quot;", ""), "")
+    let tag_re = regex::Regex::new(r"<[^>]*>").unwrap();
+    let weird_tag = regex::Regex::new(r"&[^;]*;").unwrap();
+    weird_tag
+        .replace_all(&tag_re.replace_all(&text.replace("<br />", ""), ""), "")
+        .trim()
         .to_string()
 }
 
