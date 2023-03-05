@@ -43,3 +43,33 @@ pub fn parse_feeds(rss_feeds_file: &std::path::Path, only_new: bool) -> PResult<
         })
         .collect()
 }
+
+/// File checkings
+/// Will check
+/// - if the file exists
+/// - if the file is a file
+/// - if the file is readable
+/// - if the file is empty
+pub fn check_file(file: &std::path::Path) -> PResult<()> {
+    log::debug!("Checking file: {}", file.display());
+    if !file.exists() {
+        log::error!("File: {} does not exist.", file.display());
+        return Err(crate::errors::Error::NotFound(file.display().to_string()));
+    }
+    if !file.is_file() {
+        log::error!("File: {} is not a file.", file.display());
+        return Err(crate::errors::Error::NotAFile(file.display().to_string()));
+    }
+    if std::fs::File::open(file).is_err() {
+        log::error!("File: {} is not readable.", file.display());
+        return Err(crate::errors::Error::NotReadable(
+            file.display().to_string(),
+        ));
+    }
+    if file.metadata()?.len() == 0 {
+        log::error!("File: {} is empty.", file.display());
+        return Err(crate::errors::Error::EmptyFile(file.display().to_string()));
+    }
+    log::debug!("File: {} is ok.", file.display());
+    Ok(())
+}
