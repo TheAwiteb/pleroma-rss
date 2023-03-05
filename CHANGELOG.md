@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2021-03-05
+### Added
+- Add a `--only-new` flag to only post new feed items
+- Add a `--dry-run` flag to only print the feed items that would be posted
+
+
 ## [0.2.0] - 2021-03-04
 ### Added
 - The bot now can be run, readd the feeds file and post the feed items to the pleroma instance.
