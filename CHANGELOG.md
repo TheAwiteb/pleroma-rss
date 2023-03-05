@@ -6,13 +6,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.0] - 2021-03-05
+## 0.4.0-rc.1 - 2023-03-06
+### Added
+- Now there is a `preview-image` feature that creates a preview image for the feed item
+- Add a `--preview-image-template` flag to specify a template for the preview image (`preview-image` feature)
+- Add a `--default-preview-image` flag to specify a default image when the feed item does not have an image (`preview-image` feature)
+
+## [0.3.0] - 2023-03-05
 ### Added
 - Add a `--only-new` flag to only post new feed items
 - Add a `--dry-run` flag to only print the feed items that would be posted
 
 
-## [0.2.0] - 2021-03-04
+## [0.2.0] - 2023-03-04
 ### Added
 - The bot now can be run, readd the feeds file and post the feed items to the pleroma instance.
 - Enable logging using the `RUST_LOG` environment variabl
