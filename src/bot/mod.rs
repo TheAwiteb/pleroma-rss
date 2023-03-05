@@ -34,9 +34,14 @@ impl Bot {
             log::info!("Checking feed: {}", feed.url);
             for content in &feed.check().await? {
                 log::info!("Found new content: {}", content.title);
-                content.post(&config).await?;
-                log::info!("Sleeping for 0.5 seconds.");
-                tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                if config.dry_run {
+                    log::info!("Dry run. Not posting.");
+                    println!("{content:#?}");
+                } else {
+                    content.post(&config).await?;
+                    log::info!("Sleeping for 0.5 seconds. Pleroma rate limit.");
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                }
             }
         }
         Ok(())
