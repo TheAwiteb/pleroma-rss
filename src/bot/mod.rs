@@ -52,9 +52,9 @@ impl Bot {
 /// Runs the bot. Infinite loop.
 pub async fn run(cli: Cli) -> PResult<()> {
     let config = Config::new(
-        cli.bot_token,
-        cli.pleroma_base_url,
-        utils::parse_feeds(&cli.rss_feeds_file, cli.only_new)?,
+        cli.access_token,
+        cli.base_url,
+        utils::parse_feeds(&cli.feeds_file, cli.only_new)?,
         cli.only_new,
         cli.dry_run,
         #[cfg(feature = "preview-image")]

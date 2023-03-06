@@ -1,3 +1,5 @@
+use clap::Parser;
+
 mod bot;
 mod cli;
 mod config;
@@ -7,17 +9,11 @@ mod utils;
 async fn try_main() -> errors::Result<()> {
     // Skip the first argument, which is the program name.
     pretty_env_logger::init();
-    let cli = cli::Cli::parse(std::env::args().skip(1).collect())?;
-    if cli.help {
-        log::info!("Printing help message.");
-        println!("{}", cli::help_message());
-    } else if cli.version {
-        log::info!("Printing version message.");
-        println!("{}", cli::version_message());
-    } else {
-        println!("Running the bot. Press Ctrl+C to stop.");
-        bot::run(cli).await?;
-    }
+    let cli = cli::Cli::parse();
+    cli.check()?;
+    log::debug!("CLI arguments: {:#?}", cli);
+    println!("Running the bot. Press Ctrl+C to stop.");
+    bot::run(cli).await?;
     Ok(())
 }
 
