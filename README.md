@@ -33,6 +33,7 @@ Options:
   -b, --base-url <URL>         The server URL
   -s, --items-sleep <SECONDS>  The sleep time between each feed in seconds [default: 1]
   -w, --watting-new <SECONDS>  The sleep time after end all feeds (wait for new items) in seconds [default: 30]
+  -m, --mastodon               Use Mastodon instead of Pleroma
   -n, --only-new               Only post new items. Without this flag, the bot will post all the items in the feed
   -d, --dry-run                Do not post anything, will print the items that would be posted
   -h, --help                   Print help
@@ -42,6 +43,9 @@ Options:
 ```bash
 $ pleroma-rss -b https://bassam.social -a 1234567890 -f feeds.txt
 ```
+
+### Mastodon Support
+We also support Mastodon instances. You can use the `--mastodon` flag to enable Mastodon support
 
 ### `preview-image` feature
 > Disabled by default

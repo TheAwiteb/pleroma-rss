@@ -22,6 +22,9 @@ pub enum Error {
     NoLink(url::Url),
     #[error("There is no description in items of the feed `{0}`")]
     NoDescription(url::Url),
+    #[error("The image takes too long to upload: {0}")]
+    #[cfg(feature = "preview-image")]
+    ImageTimeout(String),
     #[error("Invalid feed URL: {0}")]
     InvalidUrl(#[from] url::ParseError),
     #[error("Request error: {0}")]

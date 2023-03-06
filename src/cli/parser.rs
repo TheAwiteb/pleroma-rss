@@ -29,6 +29,9 @@ pub struct Cli {
     #[cfg(feature = "preview-image")]
     #[arg(short = 'i', long, value_name = "PATH")]
     pub default_preview_image: PathBuf,
+    /// Use Mastodon instead of Pleroma.
+    #[arg(short = 'm', long = "mastodon")]
+    pub is_mastodon: bool,
     /// Only post new items. Without this flag, the bot will post all the items in the feed.
     #[arg(short = 'n', long)]
     pub only_new: bool,

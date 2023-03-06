@@ -1,3 +1,5 @@
+use megalodon::SNS;
+
 use crate::{bot::Feed, cli::Cli, errors::Result as PResult, utils};
 #[cfg(feature = "preview-image")]
 use std::path::PathBuf;
@@ -19,6 +21,8 @@ pub struct Config {
     pub only_new: bool,
     /// Dry run flag.
     pub dry_run: bool,
+    /// Use Mastodon instead of Pleroma.
+    pub is_mastodon: bool,
     /// The preview image html template.
     #[cfg(feature = "preview-image")]
     pub preview_image_template: PathBuf,
@@ -38,10 +42,20 @@ impl Config {
             feeds: utils::parse_feeds(&cli.feeds_file, cli.only_new)?,
             only_new: cli.only_new,
             dry_run: cli.dry_run,
+            is_mastodon: cli.is_mastodon,
             #[cfg(feature = "preview-image")]
             preview_image_template: cli.preview_image_template.clone(),
             #[cfg(feature = "preview-image")]
             default_preview_image: cli.default_preview_image.clone(),
         })
+    }
+
+    /// Reutnrs the SNS (Pleroma or Mastodon)
+    pub fn sns(&self) -> SNS {
+        if self.is_mastodon {
+            SNS::Mastodon
+        } else {
+            SNS::Pleroma
+        }
     }
 }

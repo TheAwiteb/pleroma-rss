@@ -58,7 +58,7 @@ impl Content {
 
         let base_url = config.base_url.as_str();
         megalodon::generator(
-            megalodon::SNS::Pleroma,
+            config.sns(),
             // Remove the last slash.
             base_url
                 .chars()
