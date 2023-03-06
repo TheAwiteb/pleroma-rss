@@ -1,5 +1,5 @@
 pub use self::rss::Feed;
-use crate::{cli::Cli, config::Config, errors::Error as PError, errors::Result as PResult, utils};
+use crate::{cli::Cli, config::Config, errors::Error as PError, errors::Result as PResult};
 #[cfg(feature = "preview-image")]
 mod image;
 mod rss;
@@ -40,8 +40,9 @@ impl Bot {
                     println!("{content:#?}");
                 } else {
                     content.post(&config).await?;
-                    log::info!("Sleeping for 0.5 seconds. Pleroma rate limit.");
-                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                    log::info!("Sleeping. Pleroma rate limit.");
+                    tokio::time::sleep(std::time::Duration::from_secs(self.config.items_sleep))
+                        .await;
                 }
             }
         }
@@ -51,17 +52,7 @@ impl Bot {
 
 /// Runs the bot. Infinite loop.
 pub async fn run(cli: Cli) -> PResult<()> {
-    let config = Config::new(
-        cli.access_token,
-        cli.base_url,
-        utils::parse_feeds(&cli.feeds_file, cli.only_new)?,
-        cli.only_new,
-        cli.dry_run,
-        #[cfg(feature = "preview-image")]
-        cli.preview_image_template,
-        #[cfg(feature = "preview-image")]
-        cli.default_preview_image,
-    );
+    let config = Config::new(&cli)?;
     let mut bot = Bot::new(config)?;
     loop {
         // If the error is a request error, print it and continue.
@@ -79,7 +70,7 @@ pub async fn run(cli: Cli) -> PResult<()> {
             Err(err) => return Err(err),
         }
         // Sleep for 30 seconds.
-        log::info!("Waiting for new contents. Sleeping for 30 seconds.");
-        tokio::time::sleep(std::time::Duration::from_secs(30)).await;
+        log::info!("Waiting for new contents. Sleeping.");
+        tokio::time::sleep(std::time::Duration::from_secs(bot.config.watting_new)).await;
     }
 }

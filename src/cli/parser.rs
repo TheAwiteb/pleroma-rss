@@ -15,6 +15,12 @@ pub struct Cli {
     /// The server URL.
     #[arg(short, long, value_name = "URL")]
     pub base_url: url::Url,
+    /// The sleep time between each feed in seconds.
+    #[arg(short = 's', long, value_name = "SECONDS", default_value = "1")]
+    pub items_sleep: u64,
+    /// The sleep time after end all feeds (wait for new items) in seconds.
+    #[arg(short, long, value_name = "SECONDS", default_value = "30")]
+    pub watting_new: u64,
     /// The HTML template for the preview image.
     #[cfg(feature = "preview-image")]
     #[arg(short = 't', long, value_name = "PATH")]
@@ -51,6 +57,8 @@ impl std::fmt::Debug for Cli {
             .field("access_token", &"***")
             .field("feeds_file", &self.feeds_file)
             .field("base_url", &self.base_url)
+            .field("items_sleep", &self.items_sleep)
+            .field("watting_new", &self.watting_new)
             .field("only_new", &self.only_new)
             .field("dry_run", &self.dry_run)
             .finish()
@@ -64,6 +72,8 @@ impl std::fmt::Debug for Cli {
             .field("access_token", &"***")
             .field("feeds_file", &self.feeds_file)
             .field("base_url", &self.base_url)
+            .field("items_sleep", &self.items_sleep)
+            .field("watting_new", &self.watting_new)
             .field("preview_image_template", &self.preview_image_template)
             .field("default_preview_image", &self.default_preview_image)
             .field("only_new", &self.only_new)
