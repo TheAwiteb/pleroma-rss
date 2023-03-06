@@ -68,11 +68,11 @@ pub async fn run(cli: Cli) -> PResult<()> {
         // Otherwise, return the error.
         match bot.post_new_contents().await {
             Ok(_) => log::info!("Finished checking for new contents."),
-            Err(PError::RequestError(err)) => {
+            Err(PError::Request(err)) => {
                 log::error!("Error: {}", err);
                 eprintln!("Error: {}", err)
             }
-            Err(PError::MegalodonError(err)) => {
+            Err(PError::Megalodon(err)) => {
                 log::error!("Error: {}", err);
                 eprintln!("Error: {}", err)
             }

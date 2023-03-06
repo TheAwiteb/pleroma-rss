@@ -1,21 +1,17 @@
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("Unknown argument `{0}`")]
-    UnknownArgument(String),
-    #[error("The argument `{0}` is required. Use `-h` or `--help` to see the help message.")]
-    MissingArgument(String),
-    #[error("`{0}` argument is missing a value.")]
-    UncompletedArgument(String),
-    #[error("In argument `{0}`: {1}")]
-    Parsing(String, String),
-    #[error("The feeds file `{0}` is not found")]
-    NotFound(String),
-    #[error("The feeds file `{0}` is not a file")]
-    NotAFile(String),
-    #[error("The feeds file `{0}` is not readable")]
-    NotReadable(String),
-    #[error("The feeds file `{0}` is empty")]
-    EmptyFile(String),
+    #[error("The {0} `{1}` is not found")]
+    /// First argument is the type of the file (e.g. "config file"), second argument is the path to the file.
+    NotFound(String, String),
+    #[error("The {0} `{1}` is not a file")]
+    /// First argument is the type of the file (e.g. "config file"), second argument is the path to the file.
+    NotAFile(String, String),
+    #[error("The {0} `{1}` is not readable")]
+    /// First argument is the type of the file (e.g. "config file"), second argument is the path to the file.
+    NotReadable(String, String),
+    #[error("The {0} `{1}` is empty")]
+    /// First argument is the type of the file (e.g. "config file"), second argument is the path to the file.
+    EmptyFile(String, String),
     #[error("There is no publish date in items of the feed `{0}`")]
     NoPublishDate(url::Url),
     #[error("The publish date of the feed `{0}` is invalid")]
@@ -29,13 +25,13 @@ pub enum Error {
     #[error("Invalid feed URL: {0}")]
     InvalidUrl(#[from] url::ParseError),
     #[error("Request error: {0}")]
-    RequestError(#[from] reqwest::Error),
+    Request(#[from] reqwest::Error),
     #[error("RSS error: {0}")]
-    RssError(#[from] rss::Error),
+    Rss(#[from] rss::Error),
     #[error("IO error: {0}")]
-    IoError(#[from] std::io::Error),
+    Io(#[from] std::io::Error),
     #[error("Megalodon error: {0}")]
-    MegalodonError(#[from] megalodon::error::Error),
+    Megalodon(#[from] megalodon::error::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
