@@ -25,17 +25,16 @@ The binary will be in `target/release/pleroma-rss`
 ## Usage
 ```bash
 $ pleroma-rss --help
-USAGE:
-    pleroma-rss [FLAGS] [OPTIONS]
-FLAGS:
-    -h, --help      Prints help information
-    -V, --version   Prints version information
-    -n, --only-new  Only post new feed items
-    -d, --dry-run   Only print the feed items that would be posted
-OPTIONS:
-    -a, --access-token <access-token> The access token of the bot account
-    -b, --base-url <base-url>         The base url of the pleroma instance
-    -f, --feed-file <feed-file>       The path to the feeds file 
+Usage: pleroma-rss [OPTIONS] --access-token <TOKEN> --feeds-file <PATH> --base-url <URL>
+
+Options:
+  -a, --access-token <TOKEN>  Your bot access token
+  -f, --feeds-file <PATH>     The file that contains the feeds
+  -b, --base-url <URL>        The server URL
+  -n, --only-new              Only post new items. Without this flag, the bot will post all the items in the feed
+  -d, --dry-run               Do not post anything, will print the items that would be posted
+  -h, --help                  Print help
+  -V, --version               Print version
 ```
 ### Example
 ```bash
