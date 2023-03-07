@@ -26,22 +26,29 @@ pub struct Feed {
 /// The content of a feed.
 #[derive(Debug)]
 pub struct Content {
+    /// The uuid of the image. This is used in files names.
     #[cfg(feature = "preview-image")]
     pub uuid: String,
+    /// The title of the feed.
     pub title: String,
+    /// The link of the feed.
     pub link: String,
+    /// The image url of the feed.
     #[cfg(feature = "preview-image")]
     pub image_url: Option<String>,
+    /// The description of the feed.
     pub description: String,
 }
 
 impl Content {
+    /// Creates a new content instance.
     pub fn new(
         title: impl AsRef<str>,
         link: impl AsRef<str>,
         description: impl AsRef<str>,
         #[cfg(feature = "preview-image")] image: Option<String>,
     ) -> Self {
+        log::debug!("Creating new content: {}", title.as_ref());
         Self {
             #[cfg(feature = "preview-image")]
             uuid: uuid::Uuid::new_v4().to_string(),

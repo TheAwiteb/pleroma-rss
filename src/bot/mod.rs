@@ -40,7 +40,10 @@ impl Bot {
                     println!("{content:#?}");
                 } else {
                     content.post(&config).await?;
-                    log::info!("Sleeping. Pleroma rate limit.");
+                    log::info!(
+                        "Sleeping for {} seconds, before sending the next item.",
+                        self.config.items_sleep
+                    );
                     tokio::time::sleep(std::time::Duration::from_secs(self.config.items_sleep))
                         .await;
                 }
@@ -69,8 +72,11 @@ pub async fn run(cli: Cli) -> PResult<()> {
             }
             Err(err) => return Err(err),
         }
-        // Sleep for 30 seconds.
-        log::info!("Waiting for new contents. Sleeping.");
+        // Sleep before checking for new contents.
+        log::info!(
+            "Waiting for new contents. Sleeping for {} seconds.",
+            bot.config.watting_new
+        );
         tokio::time::sleep(std::time::Duration::from_secs(bot.config.watting_new)).await;
     }
 }
