@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## 0.4.0 - 2023-03-07
-See [0.4.0-rc.1](#0.4.0-rc.1) for the changes in this release candidate
+See [0.4.0-rc.1](#040-rc1---2023-03-06) for the changes in this release candidate
 ### Added
 - Use `clap`, now the CLI looks better [[600366b](https://github.com/TheAwiteb/pleroma-rss/commit/600366bf683fd902346eefed9456b2a52562f0cc)]
 - Add a `--items-sleep` flag to specify the sleep time between each feed in seconds [[PR #5](https://github.com/TheAwiteb/pleroma-rss/pull/5)]
