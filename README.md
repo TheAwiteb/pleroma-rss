@@ -1,5 +1,7 @@
 <div align="center">
 
+**Deprecation Notice: This project is no longer maintained.**
+
 # Pleroma RSS
 A Pleroma bot that sends RSS feeds to your followers. keep your followers up to date with your favorite RSS feeds.
 
